@@ -25,8 +25,8 @@ Make sure to have the following environment variables configured,
 see [example.env](example.env):
 
 ```
-BEE_API=https://bee-api.res.ibm.com
-BEE_API_KEY=<your-api-key>
+BEE_API=http://localhost:4000
+BEE_API_KEY=sk-testkey
 
 # This is required to prevent some pydantic serialization errors
 DEFER_PYDANTIC_BUILD=false
