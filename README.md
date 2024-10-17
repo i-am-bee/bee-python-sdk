@@ -69,6 +69,8 @@ using [poetry](https://python-poetry.org/).
 poetry install
 ```
 
+*(Note: if installing the dependencies hangs, you may need to disable the keyring while installing: `POETRY_KEYRING_ENABLED=false poetry install`)*
+
 Create a correct `.env` file.
 
 ```shell
