@@ -69,6 +69,14 @@ using [poetry](https://python-poetry.org/).
 poetry install
 ```
 
+Set up a local bee-stack
+
+```shell
+git clone git@github.com:i-am-bee/bee-stack.git
+cd bee-stack
+docker compose --profile all up -d
+```
+
 Create a correct `.env` file.
 
 ```shell
