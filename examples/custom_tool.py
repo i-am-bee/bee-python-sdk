@@ -7,7 +7,6 @@ See `requirements.txt` in bee-code-interpreter executor for the list of availabl
 https://github.com/i-am-bee/bee-code-interpreter/blob/main/executor/requirements.txt
 """
 
-import inspect
 import os
 import warnings
 from datetime import datetime
@@ -26,8 +25,13 @@ def heading(text: str) -> str:
 client = OpenAI(api_key=os.getenv("BEE_API_KEY"), base_url=f'{os.getenv("BEE_API")}/v1')
 
 
-# Define hosted function, all requirements must be available in the hosted executor environment.
-# Docstring must be defined and satisfy the following format:
+# Define hosted function
+# - imports that are not present in the executor environment are installed automatically (slows down execution)
+# - list of installed packages: https://github.com/i-am-bee/bee-code-interpreter/blob/main/executor/requirements-skip.txt
+# - docstring must be defined and satisfy the following format:
+ip_info_code = '''
+import requests
+
 def ip_info(ip: str) -> dict:
     """
     Get information about an IP address, such as location, company, and carrier name.
@@ -35,11 +39,10 @@ def ip_info(ip: str) -> dict:
     :param ip: IP address in the 255.255.255.255 format
     :return: Information about the IP address
     """
-    import requests
-
     response = requests.get(f"https://ipinfo.io/{ip}/geo")
     response.raise_for_status()
     return response.json()
+'''
 
 
 # Get existing tools using Bee API extension
@@ -67,7 +70,7 @@ custom_tool = client.post(
     "/tools",
     cast_to=SourceCodeTool,
     # You can also pass the source code directly as a string without python definition
-    body={"source_code": inspect.getsource(ip_info)},
+    body={"source_code": ip_info_code},
 )
 print("Tool:")
 pprint(custom_tool.model_dump())
