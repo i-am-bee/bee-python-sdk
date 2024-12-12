@@ -20,7 +20,11 @@ def heading(text: str) -> str:
 bee_client = OpenAI(base_url=f'{os.getenv("BEE_API")}/v1', api_key=os.getenv("BEE_API_KEY"))
 
 # Instantiate Observe client with Bee credentials from env, but DIFFERENT base_url (!)
-observe_client = OpenAI(base_url=f'{os.getenv("BEE_API")}/observe', api_key=os.getenv("BEE_API_KEY"))
+observe_client = OpenAI(
+    base_url=f'{os.getenv("BEE_API")}/observe/v1', api_key=os.getenv("BEE_API_KEY"),
+    # Uploading trace is an asynchronous process that takes 40-60s, hence we use a higher number of retries
+    max_retries=10
+)
 
 print(heading("Create run"))
 assistant = bee_client.beta.assistants.create(model="meta-llama/llama-3-1-70b-instruct")
@@ -41,8 +45,8 @@ print(heading("Download trace"))
 trace_info = bee_client.get(f"/threads/{thread.id}/runs/{run.id}/trace", cast_to=BaseModel)
 
 # Get trace
-params = {"include_tree": True, "include_mlflow": True}
-trace = observe_client.get(f"/trace/{trace_info.id}", options={"params": params}, cast_to=BaseModel)
+params = {"include_tree": True}
+trace = observe_client.get(f"/traces/{trace_info.id}", options={"params": params}, cast_to=BaseModel)
 print("Trace:")
 print(json.dumps(trace.model_dump(mode="json"), indent=2))
 
